@@ -1,17 +1,23 @@
 package com.ahs.udacity.popularmovies.activity;
 
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridLayout;
 
 import com.ahs.udacity.popularmovies.R;
+import com.ahs.udacity.popularmovies.activity.fragment.MoviesDetailFragment;
 import com.ahs.udacity.popularmovies.adapter.PopularMoviesAdapter;
 
-public class PopularMoviesGrid extends AppCompatActivity {
+public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetailFragment.OnFragmentInteractionListener{
+
+    private static final String TAG = PopularMoviesGrid.class.getCanonicalName() ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +28,17 @@ public class PopularMoviesGrid extends AppCompatActivity {
         gridView.setLayoutManager(gridLayoutManager);
         PopularMoviesAdapter moviesAdapter = new PopularMoviesAdapter(this);
         gridView.setAdapter(moviesAdapter);
+        if(findViewById(R.id.movieDetailContainer)!=null)
+        {
+            Log.d(TAG, "movieDetailContainer");
+
+            MoviesDetailFragment moviesDetailFragment = (MoviesDetailFragment)getFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
+            if(moviesDetailFragment == null) {
+                moviesDetailFragment =MoviesDetailFragment.newInstance("", "");
+                getFragmentManager().beginTransaction().add(R.id.movieDetailContainer, moviesDetailFragment, MoviesDetailFragment.TAG).commit();
+            }
+
+        }
     }
 
     @Override
@@ -44,5 +61,18 @@ public class PopularMoviesGrid extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public  void mDetailTab(View v)
+    {
+        if(findViewById(R.id.movieDetailContainer)==null) {
+            return;
+        }
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

@@ -1,0 +1,62 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1.0"
+    tools:context="com.ahs.udacity.popularmovies.activity.fragment.MoviesDetailFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <ImageView
+        android:id="@+id/moviePoster"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.5">
+
+    </ImageView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.5">
+        <LinearLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/detail_tab_color"
+            android:weightSum="1.0">
+            <TextView
+                android:id="@+id/rating"
+                android:textSize="20sp"
+                style="@style/mTABTextStyle"
+                android:text="@string/rating"
+
+                />
+            <TextView
+                android:id="@+id/overview"
+                style="@style/mTABTextStyle"
+                android:text="@string/overview"
+
+                />
+            <TextView
+                android:id="@+id/genre"
+                style="@style/mTABTextStyle"
+                android:text="@string/genre"
+                />
+            <!--<TextView
+                android:id="@+id/history_chat"
+                style="@style/mTABTextStyle"
+                android:text="@string/history"
+                />-->
+        </LinearLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/detailedContent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            ></android.support.v4.view.ViewPager>
+    </RelativeLayout>
+</LinearLayout>
