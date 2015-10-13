@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.ahs.udacity.popularmovies.R;
@@ -78,7 +79,20 @@ public class MoviesDetailFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onresume");
-        Picasso.with(getActivity()).load(TMDB_URL+"/hTKME3PUzdS3ezqK5BZcytXLCUl.jpg").into((ImageView)convert_view.findViewById(R.id.moviePoster));
+        final ImageView imageView = (ImageView) convert_view.findViewById(R.id.moviePoster);
+        ViewTreeObserver vto = imageView.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                int height = imageView.getMeasuredHeight();
+                int width = imageView.getMeasuredWidth();
+                Log.d(TAG, "width:" + width + " height:" + height);
+
+                Picasso.with(getActivity()).load(TMDB_URL + "/hTKME3PUzdS3ezqK5BZcytXLCUl.jpg").resize(width,height).into(imageView);
+            }
+        });
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
