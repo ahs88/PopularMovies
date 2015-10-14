@@ -2,6 +2,8 @@ package com.ahs.udacity.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
@@ -12,6 +14,8 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.ahs.udacity.popularmovies.R;
+import com.ahs.udacity.popularmovies.activity.MovieDetailActivity;
+import com.ahs.udacity.popularmovies.activity.PopularMoviesGrid;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -22,12 +26,13 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
     private static final int MOVIES_COUNT = 15;
     private static final String TAG = PopularMoviesAdapter.class.getCanonicalName();
     private Context mContext;
+    private boolean isTwoPane;
 
-    public PopularMoviesAdapter(Activity context)
+    public PopularMoviesAdapter(Activity context,boolean is_two_pane)
     {
         super();
         mContext = context;
-
+        isTwoPane = is_two_pane;
     }
 
     @Override
@@ -50,12 +55,13 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
         return MOVIES_COUNT;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView imageView;
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView)itemView.findViewById(R.id.movieThumbnail);
+            imageView.setOnClickListener(this);
         }
         public void bind(){
             ViewTreeObserver vto = imageView.getViewTreeObserver();
@@ -70,6 +76,20 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
                 }
             });
 
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(isTwoPane)
+            {
+                ((PopularMoviesGrid)mContext).addDetailFragment();
+
+            }
+            else
+            {
+                Intent intent = new Intent(mContext, MovieDetailActivity.class);
+                mContext.startActivity(intent);
+            }
         }
     }
 

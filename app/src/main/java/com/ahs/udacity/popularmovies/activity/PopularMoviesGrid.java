@@ -18,6 +18,7 @@ import com.ahs.udacity.popularmovies.adapter.PopularMoviesAdapter;
 public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetailFragment.OnFragmentInteractionListener{
 
     private static final String TAG = PopularMoviesGrid.class.getCanonicalName() ;
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +27,19 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         RecyclerView gridView = (RecyclerView)findViewById(R.id.mGridView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
         gridView.setLayoutManager(gridLayoutManager);
-        PopularMoviesAdapter moviesAdapter = new PopularMoviesAdapter(this);
-        gridView.setAdapter(moviesAdapter);
+
         if(findViewById(R.id.movieDetailContainer)!=null)
         {
             Log.d(TAG, "movieDetailContainer");
 
-            MoviesDetailFragment moviesDetailFragment = (MoviesDetailFragment)getFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
-            if(moviesDetailFragment == null) {
-                moviesDetailFragment =MoviesDetailFragment.newInstance("", "");
-                getFragmentManager().beginTransaction().add(R.id.movieDetailContainer, moviesDetailFragment, MoviesDetailFragment.TAG).commit();
-            }
+            mTwoPane = true;
 
         }
+        else {
+            mTwoPane = false;
+        }
+        PopularMoviesAdapter moviesAdapter = new PopularMoviesAdapter(this,mTwoPane);
+        gridView.setAdapter(moviesAdapter);
     }
 
     @Override
@@ -68,11 +69,21 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         if(findViewById(R.id.movieDetailContainer)==null) {
             return;
         }
-
+        MoviesDetailFragment movieDetailFragment = (MoviesDetailFragment)getSupportFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
+        movieDetailFragment.mDetailTab(v);
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+
+    public void addDetailFragment() {
+        MoviesDetailFragment moviesDetailFragment = (MoviesDetailFragment) getSupportFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
+        if (moviesDetailFragment == null) {
+            moviesDetailFragment = MoviesDetailFragment.newInstance("", "");
+            getSupportFragmentManager().beginTransaction().add(R.id.movieDetailContainer, moviesDetailFragment, MoviesDetailFragment.TAG).commit();
+        }
     }
 }

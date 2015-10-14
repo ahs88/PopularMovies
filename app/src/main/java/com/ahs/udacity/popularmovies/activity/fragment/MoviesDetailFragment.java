@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.ahs.udacity.popularmovies.R;
+import com.ahs.udacity.popularmovies.adapter.MovieDetailPagerAdapter;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -22,7 +24,7 @@ import com.squareup.picasso.Picasso;
  * Use the {@link MoviesDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MoviesDetailFragment extends Fragment {
+public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -72,6 +74,10 @@ public class MoviesDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         convert_view =  inflater.inflate(R.layout.fragment_movies_detail, container, false);
+        ViewPager viewPager = (ViewPager)convert_view.findViewById(R.id.detailedContentPager);
+        MovieDetailPagerAdapter movieDetailPagerAdapter = new MovieDetailPagerAdapter(getActivity(),getChildFragmentManager());
+        viewPager.setAdapter(movieDetailPagerAdapter);
+
         return convert_view;
     }
 
@@ -132,6 +138,19 @@ public class MoviesDetailFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    public void mDetailTab(View v)
+    {
+        switch (v.getId())
+        {
+            case R.id.overview:
+                break;
+            case R.id.rating:
+                break;
+            case R.id.genre:
+                break;
+        }
     }
 
 }
