@@ -23,8 +23,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import com.example.android.network.sync.basicsyncadapter.accounts.GenericAccountService;
-import com.example.android.network.sync.basicsyncadapter.provider.MovieContract;
+import com.ahs.udacity.popularmovies.accounts.GenericAccountService;
+import com.ahs.udacity.popularmovies.provider.MovieContract;
+
 
 /**
  * Static helper methods for working with the sync framework.

@@ -9,12 +9,20 @@ import android.view.View;
 
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.activity.fragment.MoviesDetailFragment;
+import com.ahs.udacity.popularmovies.adapter.PopularMoviesAdapter;
+import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
 
 public class MovieDetailActivity extends AppCompatActivity implements MoviesDetailFragment.OnFragmentInteractionListener {
 
+
+    public MovieDetail movieDetail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getIntent()!=null && getIntent().getExtras().getParcelable(PopularMoviesAdapter.MOVIE_DETAIL)!=null)
+        {
+            movieDetail = getIntent().getExtras().getParcelable(PopularMoviesAdapter.MOVIE_DETAIL);
+        }
         setContentView(R.layout.activity_movie_detail);
         addDetailFragment();
     }
@@ -44,7 +52,7 @@ public class MovieDetailActivity extends AppCompatActivity implements MoviesDeta
     public void addDetailFragment() {
         MoviesDetailFragment moviesDetailFragment = (MoviesDetailFragment) getSupportFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
         if (moviesDetailFragment == null) {
-            moviesDetailFragment = MoviesDetailFragment.newInstance("", "");
+            moviesDetailFragment = MoviesDetailFragment.newInstance(movieDetail);
             getSupportFragmentManager().beginTransaction().add(R.id.movie_container, moviesDetailFragment, MoviesDetailFragment.TAG).commit();
         }
     }

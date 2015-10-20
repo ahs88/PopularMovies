@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Movie;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
@@ -16,21 +18,25 @@ import android.widget.ImageView;
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.activity.MovieDetailActivity;
 import com.ahs.udacity.popularmovies.activity.PopularMoviesGrid;
+import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
+import com.ahs.udacity.popularmovies.provider.DbManager;
 import com.squareup.picasso.Picasso;
 
 /**
  * Created by shetty on 03/10/15.
  */
-public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdapter.ViewHolder>{
+public class PopularMoviesAdapter extends CursorRecyclerViewAdapter<PopularMoviesAdapter.ViewHolder>{
 
     private static final int MOVIES_COUNT = 15;
     private static final String TAG = PopularMoviesAdapter.class.getCanonicalName();
+    public static final String MOVIE_DETAIL = "MOVIE_DETAIL";
+    private static final String TMDB_IMAGE_LINK = "http://i.imgur.com/";
     private Context mContext;
     private boolean isTwoPane;
 
-    public PopularMoviesAdapter(Activity context,boolean is_two_pane)
+    public PopularMoviesAdapter(Cursor cursor, Activity context,boolean is_two_pane)
     {
-        super();
+        super(context,cursor);
         mContext = context;
         isTwoPane = is_two_pane;
     }
@@ -43,27 +49,33 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
         return viewHolder;
     }
 
-    @Override
-    public void onBindViewHolder(PopularMoviesAdapter.ViewHolder viewHolder, int i) {
-        Log.d(TAG, "onBindViewHolder");
-        viewHolder.bind();
-
-    }
 
     @Override
     public int getItemCount() {
         return MOVIES_COUNT;
     }
 
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
+        MovieDetail mDetail  = DbManager.getElementFromCursor(cursor);
+        viewHolder.bind(mDetail);
+
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView imageView;
+        private MovieDetail movieDetail;
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView)itemView.findViewById(R.id.movieThumbnail);
             imageView.setOnClickListener(this);
         }
-        public void bind(){
+
+
+        public void bind(final MovieDetail movieDetail){
+            this.movieDetail = movieDetail;
+            Log.d(TAG,"MovieDetail:"+movieDetail);
             ViewTreeObserver vto = imageView.getViewTreeObserver();
             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -72,7 +84,7 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
                     int height = imageView.getMeasuredHeight();
                     int width = imageView.getMeasuredWidth();
                     Log.d(TAG,"width:"+width+" height:"+height);
-                    Picasso.with(imageView.getContext()).load("http://i.imgur.com/DvpvklR.png").resize(width, height).into(imageView);
+                    Picasso.with(imageView.getContext()).load(TMDB_IMAGE_LINK+movieDetail.getThumbNailLink()).resize(width, height).into(imageView);
                 }
             });
 
@@ -82,12 +94,13 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
         public void onClick(View v) {
             if(isTwoPane)
             {
-                ((PopularMoviesGrid)mContext).addDetailFragment();
+                ((PopularMoviesGrid)mContext).addDetailFragment(movieDetail);
 
             }
             else
             {
                 Intent intent = new Intent(mContext, MovieDetailActivity.class);
+                intent.getExtras().putParcelable(MOVIE_DETAIL,movieDetail);
                 mContext.startActivity(intent);
             }
         }

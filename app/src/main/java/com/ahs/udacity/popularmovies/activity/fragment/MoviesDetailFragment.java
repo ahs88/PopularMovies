@@ -14,6 +14,7 @@ import android.widget.ImageView;
 
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.adapter.MovieDetailPagerAdapter;
+import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -27,31 +28,31 @@ import com.squareup.picasso.Picasso;
 public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String MOVIE_DETAIL = "movie_detail";
+
     public static final String TAG = MoviesDetailFragment.class.getCanonicalName();
-    private static final String TMDB_URL = "http://image.tmdb.org/t/p/w500";
+    private static final String TMDB_URL = "http://image.tmdb.org/t/p/w500/";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private View convert_view;
+    private MovieDetail movie_detail;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param movieDetail Parameter 1.
+
      * @return A new instance of fragment MoviesDetailFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MoviesDetailFragment newInstance(String param1, String param2) {
+    public static MoviesDetailFragment newInstance(MovieDetail movieDetail) {
         MoviesDetailFragment fragment = new MoviesDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(MOVIE_DETAIL, movieDetail);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,8 +65,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            movie_detail = (MovieDetail)getArguments().getParcelable(MOVIE_DETAIL);
         }
     }
 
@@ -93,9 +93,9 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
                 //imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 int height = imageView.getMeasuredHeight();
                 int width = imageView.getMeasuredWidth();
-                Log.d(TAG, "width:" + width + " height:" + height);
+                Log.d(TAG, "width:" + width + " height:" + height+" image_url:"+TMDB_URL + movie_detail.getPosterLink());
 
-                Picasso.with(getActivity()).load(TMDB_URL + "/hTKME3PUzdS3ezqK5BZcytXLCUl.jpg").resize(width,height).into(imageView);
+                Picasso.with(getActivity()).load(TMDB_URL + movie_detail.getPosterLink()).resize(width,height).into(imageView);
             }
         });
 

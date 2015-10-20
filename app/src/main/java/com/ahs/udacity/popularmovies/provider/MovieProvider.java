@@ -25,7 +25,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
-import com.example.android.network.sync.basicsyncadapter.util.SelectionBuilder;
+import com.ahs.udacity.popularmovies.util.SelectionBuilder;
+
 
 public class MovieProvider extends ContentProvider {
     MovieDatabase mDatabaseHelper;

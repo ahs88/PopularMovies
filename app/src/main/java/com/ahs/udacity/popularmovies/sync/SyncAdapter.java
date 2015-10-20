@@ -30,9 +30,10 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.example.android.network.sync.basicsyncadapter.datamodel.MovieDetail;
-import com.example.android.network.sync.basicsyncadapter.datamodel.MovieType;
-import com.example.android.network.sync.basicsyncadapter.provider.MovieContract;
+
+import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
+import com.ahs.udacity.popularmovies.datamodel.MovieType;
+import com.ahs.udacity.popularmovies.provider.MovieContract;
 import com.google.common.io.CharStreams;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;

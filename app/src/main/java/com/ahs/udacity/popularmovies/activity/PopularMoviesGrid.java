@@ -1,6 +1,10 @@
 package com.ahs.udacity.popularmovies.activity;
 
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,17 +18,22 @@ import android.widget.GridLayout;
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.activity.fragment.MoviesDetailFragment;
 import com.ahs.udacity.popularmovies.adapter.PopularMoviesAdapter;
+import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
+import com.ahs.udacity.popularmovies.provider.MovieContract;
 
-public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetailFragment.OnFragmentInteractionListener{
+public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetailFragment.OnFragmentInteractionListener, android.support.v4.app.LoaderManager.LoaderCallbacks{
 
     private static final String TAG = PopularMoviesGrid.class.getCanonicalName() ;
+    private static final String[] PROJECTION = {};
     private boolean mTwoPane;
+    private PopularMoviesAdapter moviesAdapter;
+    private RecyclerView gridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popular_movies_grid);
-        RecyclerView gridView = (RecyclerView)findViewById(R.id.mGridView);
+        gridView = (RecyclerView)findViewById(R.id.mGridView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
         gridView.setLayoutManager(gridLayoutManager);
 
@@ -38,8 +47,7 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         else {
             mTwoPane = false;
         }
-        PopularMoviesAdapter moviesAdapter = new PopularMoviesAdapter(this,mTwoPane);
-        gridView.setAdapter(moviesAdapter);
+
     }
 
     @Override
@@ -79,11 +87,41 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
     }
 
 
-    public void addDetailFragment() {
+    public void addDetailFragment(MovieDetail movieDetail) {
         MoviesDetailFragment moviesDetailFragment = (MoviesDetailFragment) getSupportFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
         if (moviesDetailFragment == null) {
-            moviesDetailFragment = MoviesDetailFragment.newInstance("", "");
+            moviesDetailFragment = MoviesDetailFragment.newInstance(movieDetail);
             getSupportFragmentManager().beginTransaction().add(R.id.movieDetailContainer, moviesDetailFragment, MoviesDetailFragment.TAG).commit();
         }
     }
+
+    @Override
+    public android.support.v4.content.Loader onCreateLoader(int id, Bundle args) {
+         return new CursorLoader(this,  // Context
+                MovieContract.Entry.CONTENT_URI, // URI
+                null,                // Projection
+                null,                           // Selection
+                null,                           // Selection args
+                MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE + " desc");
+
+    }
+
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader loader, Object data) {
+        moviesAdapter.changeCursor((Cursor)data);
+        initAdapter((Cursor)data);
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader loader) {
+
+    }
+
+    public void initAdapter(Cursor cursor)
+    {
+        moviesAdapter = new PopularMoviesAdapter(cursor,this,mTwoPane);
+        gridView.setAdapter(moviesAdapter);
+    }
+
+
 }
