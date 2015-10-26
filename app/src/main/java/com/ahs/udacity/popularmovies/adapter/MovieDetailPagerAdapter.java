@@ -8,6 +8,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.ahs.udacity.popularmovies.activity.fragment.movieDetailFragments.Genre;
 import com.ahs.udacity.popularmovies.activity.fragment.movieDetailFragments.Overview;
 import com.ahs.udacity.popularmovies.activity.fragment.movieDetailFragments.Ratings;
+import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
+
+import java.util.ArrayList;
 
 /**
  * Created by shetty on 09/10/15.
@@ -16,12 +19,13 @@ public class MovieDetailPagerAdapter extends FragmentPagerAdapter {
 
     private final Context mContext;
     private static final int DEFAULT_SIZE = 3;
-    public enum DetailType{OVERVIEW,GENRE,RATINGS};
+    public enum DetailType{OVERVIEW,RATINGS,GENRE};
+    private MovieDetail movieDetail;
 
-    public MovieDetailPagerAdapter(Context context, FragmentManager fm) {
+    public MovieDetailPagerAdapter(Context context, FragmentManager fm,MovieDetail movie_detail) {
         super(fm);
         mContext=context;
-
+        movieDetail = movie_detail;
     }
 
     private int baseId;
@@ -30,14 +34,14 @@ public class MovieDetailPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch(DetailType.values()[position]){
             case OVERVIEW:
-                Overview overview = Overview.newInstance("","");
+                Overview overview = Overview.newInstance(movieDetail.getOverview());
                 return overview;
-            case GENRE:
-                Genre popularity = Genre.newInstance("", "");
-                return popularity;
             case RATINGS:
-                Ratings rating = Ratings.newInstance("", "");
+                Ratings rating = Ratings.newInstance(movieDetail.getRating(), movieDetail.getPopularity());
                 return rating;
+            case GENRE:
+                Genre popularity = Genre.newInstance((ArrayList)movieDetail.getGenreIds());
+                return popularity;
 
         }
         return null;

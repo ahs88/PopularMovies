@@ -29,16 +29,16 @@
             android:background="@color/detail_tab_color"
             android:weightSum="1.0">
             <TextView
-                android:id="@+id/rating"
+                android:id="@+id/overview"
                 android:textSize="20sp"
                 style="@style/mTABTextStyle"
-                android:text="@string/rating"
+                android:text="@string/overview"
 
                 />
             <TextView
-                android:id="@+id/overview"
+                android:id="@+id/rating"
                 style="@style/mTABTextStyle"
-                android:text="@string/overview"
+                android:text="@string/rating"
 
                 />
             <TextView
@@ -59,6 +59,7 @@
             android:layout_below="@+id/tabLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:background="@android:color/white"
             ></android.support.v4.view.ViewPager>
     </RelativeLayout>
 </LinearLayout>

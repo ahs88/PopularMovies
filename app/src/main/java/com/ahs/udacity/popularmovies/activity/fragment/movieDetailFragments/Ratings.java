@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.ahs.udacity.popularmovies.R;
 
@@ -21,14 +22,17 @@ import com.ahs.udacity.popularmovies.R;
 public class Ratings extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String RATING = "RATING";
+    private static final String VOTE_COUNT = "VOTE_COUNT";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
 
     private OnFragmentInteractionListener mListener;
+    private View convert_view;
+    private TextView rating_view;
+    private String rating;
+    private String vote_count;
+    private TextView vote_count_view;
 
     /**
      * Use this factory method to create a new instance of
@@ -42,8 +46,8 @@ public class Ratings extends android.support.v4.app.Fragment {
     public static Ratings newInstance(String param1, String param2) {
         Ratings fragment = new Ratings();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(RATING, param1);
+        args.putString(VOTE_COUNT, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +60,8 @@ public class Ratings extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            rating = getArguments().getString(RATING);
+            vote_count = getArguments().getString(VOTE_COUNT);
         }
     }
 
@@ -65,7 +69,13 @@ public class Ratings extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ratings, container, false);
+        convert_view =  inflater.inflate(R.layout.fragment_ratings, container, false);
+
+        rating_view = (TextView)convert_view.findViewById(R.id.rating);
+        vote_count_view = (TextView)convert_view.findViewById(R.id.vote_count);
+        rating_view.setText(rating);
+        vote_count_view.setText(vote_count);
+        return convert_view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

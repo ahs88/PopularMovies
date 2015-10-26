@@ -4,11 +4,18 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ahs.udacity.popularmovies.R;
+import com.ahs.udacity.popularmovies.adapter.GenreImagesAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,31 +26,33 @@ import com.ahs.udacity.popularmovies.R;
  * create an instance of this fragment.
  */
 public class Genre extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String GENREIDS = "GENREIDS";
+    private static final String TAG = Genre.class.getCanonicalName();
+
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private List<String> genreIds;
+
 
     private OnFragmentInteractionListener mListener;
+    private View convert_view;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param genre_ids Parameter 1.
+     *
      * @return A new instance of fragment Genre.
      */
     // TODO: Rename and change types and number of parameters
-    public static Genre newInstance(String param1, String param2) {
+    public static Genre newInstance(ArrayList<String> genre_ids) {
         Genre fragment = new Genre();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putStringArrayList(GENREIDS, genre_ids);
+        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +65,8 @@ public class Genre extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            genreIds = getArguments().getStringArrayList(GENREIDS);
+
         }
     }
 
@@ -65,7 +74,13 @@ public class Genre extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_popularity, container, false);
+        Log.d(TAG, "onCreateView genreIds size:"+genreIds.size());
+        convert_view =  inflater.inflate(R.layout.fragment_genre, container, false);
+        RecyclerView recyclerView = (RecyclerView)convert_view.findViewById(R.id.grid_genre_images);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),4);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(new GenreImagesAdapter(genreIds,getActivity()));
+        return convert_view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -78,12 +93,6 @@ public class Genre extends android.support.v4.app.Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        /*try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override

@@ -219,6 +219,7 @@ public class MovieProvider extends ContentProvider {
 
         private static final String TYPE_TEXT = " TEXT";
         private static final String TYPE_INTEGER = " INTEGER";
+        private static final String TYPE_BOOL = "BOOL";
         private static final String COMMA_SEP = ",";
         /** SQL statement to create "entry" table. */
         private static final String SQL_CREATE_ENTRIES =
@@ -232,7 +233,11 @@ public class MovieProvider extends ContentProvider {
                         MovieContract.Entry.COLUMN_MOVIE_RATING + TYPE_INTEGER +COMMA_SEP +
                         MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE + TYPE_TEXT +COMMA_SEP +
                         MovieContract.Entry.COLUMN_MOVIE_OVERVIEW + TYPE_TEXT +COMMA_SEP+
-                        MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY + TYPE_TEXT +
+                        MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY + TYPE_TEXT +COMMA_SEP+
+                        MovieContract.Entry.COLUMN_IS_POPULAR + TYPE_BOOL +COMMA_SEP+
+                        MovieContract.Entry.COLUMN_IS_TOP_RATED + TYPE_BOOL +COMMA_SEP+
+                        MovieContract.Entry.COLUMN_IS_UPCOMING + TYPE_BOOL +COMMA_SEP+
+                        MovieContract.Entry.COLUMN_IS_NOW_PLAYING + TYPE_BOOL +
         ")";
 
         /** SQL statement to drop "entry" table. */

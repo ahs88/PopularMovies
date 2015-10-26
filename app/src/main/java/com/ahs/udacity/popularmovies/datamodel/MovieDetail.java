@@ -1,9 +1,12 @@
 package com.ahs.udacity.popularmovies.datamodel;
 
+import android.graphics.Movie;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.ahs.udacity.popularmovies.provider.DbManager;
+import com.ahs.udacity.popularmovies.provider.MovieContract;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,60 +21,74 @@ import java.util.Map;
  * Created by akshath on 10/9/2015.
  */
 public class MovieDetail implements Parcelable{
+
+    private static final String TAG = MovieDetail.class.getCanonicalName();
     @SerializedName("id")
-    private String movieId;
+    private int movieId;
     @SerializedName("title")
     private String movieTitle;
     @SerializedName("genre_ids")
     private List<String> genreIds = new ArrayList<>();
+    @SerializedName("overview")
     private String overview;
     @SerializedName("release_date")
     private String releaseDate;
 
     private String youtubeKey;
+    @SerializedName("poster_path")
     private String posterLink;
+    @SerializedName("backdrop_path")
     private String thumbNailLink;
+    @SerializedName("vote_count")
+    private String popularity;
+    @SerializedName("vote_average")
+    private String rating;
 
     //constants to map setters and getter funcitons
-    private static final String MOVIEID="MOVIEID";
-    private static final String MOVIETITLE="MOVIETITLE";
-    private static final String GENREID="GENREID";
-    private static final String OVERVIEW="OVERVIEW";
-    private static final String RELEASEDATE="RELEASEDATE";
-    private static final String YOUTUBEKEY="YOUTUBEKEY";
-    private static final String POSTERLINK="POSTERLINK";
-    private static final String THUMBNAIL="THUMBNAIL";
 
-    private Map<String,Method> mGetterMethodMap;
+    private static final String MOVIEID= MovieContract.Entry._ID;
+    private static final String MOVIETITLE=MovieContract.Entry.COLUMN_MOVIE_TITLE;
+    private static final String GENREID=MovieContract.Entry.COLUMN_GENRE;
+    private static final String OVERVIEW= MovieContract.Entry.COLUMN_MOVIE_OVERVIEW;
+    private static final String RELEASEDATE=MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE;
+    private static final String YOUTUBEKEY=MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY;
+    private static final String POSTERLINK=MovieContract.Entry.COLUMN_POSTER_LINK;
+    private static final String THUMBNAIL=MovieContract.Entry.COLUMN_THUMBNAIL_LINK;
+    private static final String POPULARITY =MovieContract.Entry.COLUMN_MOVIE_POPULARITY ;
+    private static final String RATING = MovieContract.Entry.COLUMN_MOVIE_RATING;
+
+    private Map<String,Method> mGetterMethodMap=new HashMap<>();
 
     //private Map<String,Method> mAdderMethodMap;
-    private Map<String,Method> mSetterMethodMap;
+    private Map<String,Method> mSetterMethodMap= new HashMap<>();
 
     public MovieDetail(){
         try {
             initMethodMap();
+           // initializeDefaultValue();
         }catch (Exception e){
 
         }
     }
 
+    private void initializeDefaultValue() {
 
-    private List<String> detailKeyList= Arrays.asList(MOVIEID,MOVIETITLE,GENREID,OVERVIEW,RELEASEDATE,YOUTUBEKEY,POSTERLINK,THUMBNAIL);
+    }
 
-    public MovieDetail(Parcel parcel)
-    {
-        String []arr = new String[7];
+
+    private List<String> detailKeyList= Arrays.asList(MOVIEID,MOVIETITLE,OVERVIEW,RELEASEDATE,YOUTUBEKEY,POSTERLINK,THUMBNAIL,POPULARITY,RATING,GENREID);
+
+    public MovieDetail(Parcel parcel) throws NoSuchMethodException {
+        initMethodMap();
+        movieId = parcel.readInt();
+        String []arr = new String[detailKeyList.size()-2];
                 parcel.readStringArray(arr);
-        int i=0;
+        int i=1;
         for(String key:arr){
-            Object val;
             try{
-                val = getmGetterMethodMap().get(detailKeyList.get(i)).invoke(this);
-                if(val instanceof String)
-                {
+                Log.d(TAG,"MovieDetail:"+detailKeyList.get(i)+" method name:"+getmSetterMethodMap().get(detailKeyList.get(i)));
                     getmSetterMethodMap().get(detailKeyList.get(i)).invoke(this,key);
                     i++;
-                }
 
             }catch (IllegalArgumentException ile){
 
@@ -87,11 +104,11 @@ public class MovieDetail implements Parcelable{
     }
 
 
-    public String getMovieId() {
+    public int getMovieId() {
         return movieId;
     }
 
-    public void setMovieId(String movieId) {
+    public void setMovieId(int movieId) {
         this.movieId = movieId;
     }
 
@@ -154,7 +171,7 @@ public class MovieDetail implements Parcelable{
     private void initMethodMap() throws NoSuchMethodException {
 
         //getter method map creation
-        mGetterMethodMap = new HashMap<>();
+        //mGetterMethodMap = new HashMap<>();
         mGetterMethodMap.put(MOVIEID,MovieDetail.class.getMethod("getMovieId"));
         mGetterMethodMap.put(MOVIETITLE,MovieDetail.class.getMethod("getMovieTitle"));
         mGetterMethodMap.put(GENREID,MovieDetail.class.getMethod("getGenreIds"));
@@ -163,7 +180,8 @@ public class MovieDetail implements Parcelable{
         mGetterMethodMap.put(YOUTUBEKEY,MovieDetail.class.getMethod("getYoutubeKey"));
         mGetterMethodMap.put(POSTERLINK,MovieDetail.class.getMethod("getPosterLink"));
         mGetterMethodMap.put(THUMBNAIL,MovieDetail.class.getMethod("getThumbNailLink"));
-
+        mGetterMethodMap.put(POPULARITY,MovieDetail.class.getMethod("getPopularity"));
+        mGetterMethodMap.put(RATING,MovieDetail.class.getMethod("getRating"));
 
         //args for setter method
         Class[] cStringArgs = new Class[1];
@@ -172,17 +190,21 @@ public class MovieDetail implements Parcelable{
         Class[] cListArgs = new Class[1];
         cListArgs[0] = List.class;
 
+        Class[] cIntArgs = new Class[1];
+        cIntArgs[0] = int.class;
+
         //setter method map creation
-        mSetterMethodMap = new HashMap<>();
-        mSetterMethodMap.put(MOVIEID,MovieDetail.class.getMethod("setMovieId", cStringArgs));
-        mSetterMethodMap.put(MOVIETITLE,MovieDetail.class.getMethod("setMovieId", cStringArgs));
+        //mSetterMethodMap = new HashMap<>();
+        mSetterMethodMap.put(MOVIEID,MovieDetail.class.getMethod("setMovieId", cIntArgs));
+        mSetterMethodMap.put(MOVIETITLE,MovieDetail.class.getMethod("setMovieTitle", String.class));
         mSetterMethodMap.put(GENREID,MovieDetail.class.getMethod("setGenreIds",cListArgs));
         mSetterMethodMap.put(OVERVIEW,MovieDetail.class.getMethod("setOverview",cStringArgs));
         mSetterMethodMap.put(RELEASEDATE,MovieDetail.class.getMethod("setReleaseDate",cStringArgs));
-        mSetterMethodMap.put(YOUTUBEKEY,MovieDetail.class.getMethod("getYoutubeKey",cStringArgs));
-        mSetterMethodMap.put(POSTERLINK,MovieDetail.class.getMethod("getPosterLink",cStringArgs));
-        mSetterMethodMap.put(THUMBNAIL,MovieDetail.class.getMethod("getThumbNailLink",cStringArgs));
-
+        mSetterMethodMap.put(YOUTUBEKEY,MovieDetail.class.getMethod("setYoutubeKey",cStringArgs));
+        mSetterMethodMap.put(POSTERLINK,MovieDetail.class.getMethod("setPosterLink",cStringArgs));
+        mSetterMethodMap.put(THUMBNAIL,MovieDetail.class.getMethod("setThumbNailLink",cStringArgs));
+        mSetterMethodMap.put(POPULARITY,MovieDetail.class.getMethod("setPopularity", String.class));
+        mSetterMethodMap.put(RATING,MovieDetail.class.getMethod("setRating", String.class));
     }
 
     public List<String> getDetailKeyList() {
@@ -203,13 +225,13 @@ public class MovieDetail implements Parcelable{
     }
 
     public Map<String, Method> getmSetterMethodMap() {
-        return mGetterMethodMap;
+        return mSetterMethodMap;
     }
 
     @Override
     public String toString() {
         //return super.toString();
-        return new String("id:"+movieId+" title:"+movieTitle+" genreIds:"+genreIds+" overview:"+overview+" release_date:"+releaseDate+" youtubeKey:"+youtubeKey+" poster_link:"+posterLink);
+        return new String("id:"+movieId+" title:"+movieTitle+" genreIds:"+genreIds+" overview:"+overview+" release_date:"+releaseDate+" youtubeKey:"+youtubeKey+" poster_link:"+posterLink+" thumnnailLink:"+thumbNailLink);
     }
 
     @Override
@@ -219,13 +241,20 @@ public class MovieDetail implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-          dest.writeStringArray(new String[]{this.movieId,this.movieTitle,this.overview,this.releaseDate,this.youtubeKey,this.posterLink,this.thumbNailLink});
+          dest.writeInt(this.movieId);
+          dest.writeStringArray(new String[]{this.movieTitle,this.overview,this.releaseDate,this.youtubeKey,this.posterLink,this.thumbNailLink,this.popularity,this.rating});
           dest.writeList(this.genreIds);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){
           public MovieDetail createFromParcel(Parcel in){
-              return new MovieDetail(in);
+              try {
+                  return new MovieDetail(in);
+              } catch (NoSuchMethodException e) {
+                  e.printStackTrace();
+
+              }
+              return null;
           }
 
           public MovieDetail[] newArray(int size){
@@ -234,4 +263,19 @@ public class MovieDetail implements Parcelable{
 
     };
 
+    public String getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(String popularity) {
+        this.popularity = popularity;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
 }

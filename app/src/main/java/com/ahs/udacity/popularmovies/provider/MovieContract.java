@@ -31,7 +31,7 @@ public class MovieContract {
     /**
      * Content provider authority.
      */
-    public static final String CONTENT_AUTHORITY = "com.example.android.network.sync.basicsyncadapter";
+    public static final String CONTENT_AUTHORITY = "com.ahs.udacity.popularmovies";
 
     /**
      * Base URI. (content://com.example.android.network.sync.basicsyncadapter)
@@ -51,12 +51,12 @@ public class MovieContract {
          * MIME type for lists of entries.
          */
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.basicsyncadapter.entries";
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.popularmovies.entries";
         /**
          * MIME type for individual entries.
          */
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.basicsyncadapter.entry";
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.popularmovies.entry";
 
         /**
          * Fully qualified URI for "entry" resources.
@@ -100,5 +100,10 @@ public class MovieContract {
         public static final String COLUMN_YOUTUBE_VIDEO_KEY = "youtube_video_key";
 
         public static final String COLUMN_GENRE = "movie_genre_ids";
+        public static final String COLUMN_IS_POPULAR = "is_popular";
+        public static final String COLUMN_IS_TOP_RATED = "is_top_rated";
+        public static final String COLUMN_IS_UPCOMING = "is_upoming";
+        public static final String COLUMN_IS_NOW_PLAYING = "is_now_playing";
+
     }
 }

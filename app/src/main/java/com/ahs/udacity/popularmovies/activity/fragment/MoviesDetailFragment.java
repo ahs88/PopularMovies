@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.adapter.MovieDetailPagerAdapter;
@@ -32,6 +33,11 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
 
     public static final String TAG = MoviesDetailFragment.class.getCanonicalName();
     private static final String TMDB_URL = "http://image.tmdb.org/t/p/w500/";
+    private static final int OVERVIEW = 0;
+    private static final int RATING = 1;
+    private static final int GENRE = 2;
+    private static final float SELECTED_SIZE = 22;
+    private static final float DESELECTED_SIZE = 16;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -39,6 +45,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     private OnFragmentInteractionListener mListener;
     private View convert_view;
     private MovieDetail movie_detail;
+    private ViewPager viewPager;
 
     /**
      * Use this factory method to create a new instance of
@@ -74,8 +81,8 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         convert_view =  inflater.inflate(R.layout.fragment_movies_detail, container, false);
-        ViewPager viewPager = (ViewPager)convert_view.findViewById(R.id.detailedContentPager);
-        MovieDetailPagerAdapter movieDetailPagerAdapter = new MovieDetailPagerAdapter(getActivity(),getChildFragmentManager());
+        viewPager = (ViewPager)convert_view.findViewById(R.id.detailedContentPager);
+        MovieDetailPagerAdapter movieDetailPagerAdapter = new MovieDetailPagerAdapter(getActivity(),getChildFragmentManager(),movie_detail);
         viewPager.setAdapter(movieDetailPagerAdapter);
 
         return convert_view;
@@ -86,18 +93,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
         super.onResume();
         Log.d(TAG, "onresume");
         final ImageView imageView = (ImageView) convert_view.findViewById(R.id.moviePoster);
-        ViewTreeObserver vto = imageView.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                //imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int height = imageView.getMeasuredHeight();
-                int width = imageView.getMeasuredWidth();
-                Log.d(TAG, "width:" + width + " height:" + height+" image_url:"+TMDB_URL + movie_detail.getPosterLink());
-
-                Picasso.with(getActivity()).load(TMDB_URL + movie_detail.getPosterLink()).resize(width,height).into(imageView);
-            }
-        });
+        Picasso.with(getActivity()).load(TMDB_URL + movie_detail.getThumbNailLink()).fit().into(imageView);
 
     }
 
@@ -142,15 +138,35 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
 
     public void mDetailTab(View v)
     {
+        setTabTextSize(v.getId());
         switch (v.getId())
         {
+
             case R.id.overview:
+                viewPager.setCurrentItem(OVERVIEW);
                 break;
             case R.id.rating:
+                viewPager.setCurrentItem(RATING);
                 break;
             case R.id.genre:
+                viewPager.setCurrentItem(GENRE);
                 break;
         }
+    }
+
+    private void setTabTextSize(int id) {
+        int arr[] = new int[]{R.id.overview,R.id.rating,R.id.genre};
+        for(int i=0;i<arr.length;i++){
+            if(arr[i]==id)
+            {
+                ((TextView)convert_view.findViewById(arr[i])).setTextSize(SELECTED_SIZE);
+            }
+            else
+            {
+                ((TextView)convert_view.findViewById(arr[i])).setTextSize(DESELECTED_SIZE);
+            }
+        }
+
     }
 
 }

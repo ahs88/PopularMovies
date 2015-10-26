@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Movie;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.activity.MovieDetailActivity;
@@ -30,33 +32,37 @@ public class PopularMoviesAdapter extends CursorRecyclerViewAdapter<PopularMovie
     private static final int MOVIES_COUNT = 15;
     private static final String TAG = PopularMoviesAdapter.class.getCanonicalName();
     public static final String MOVIE_DETAIL = "MOVIE_DETAIL";
-    private static final String TMDB_IMAGE_LINK = "http://i.imgur.com/";
+
     private Context mContext;
     private boolean isTwoPane;
 
     public PopularMoviesAdapter(Cursor cursor, Activity context,boolean is_two_pane)
     {
-        super(context,cursor);
+        super(context, cursor);
         mContext = context;
         isTwoPane = is_two_pane;
     }
 
     @Override
     public PopularMoviesAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        Log.d(TAG,"onCreateViewHolder");
         LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.popularmovies_grid_view,viewGroup,false);
+
         ViewHolder viewHolder = new ViewHolder(
-        inflater.inflate(R.layout.popularmovies_grid_view,viewGroup,false));
+        view);
         return viewHolder;
     }
 
 
-    @Override
+    /*@Override
     public int getItemCount() {
         return MOVIES_COUNT;
-    }
+    }*/
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
+        //Log.d(TAG,"onBindViewHolder");
         MovieDetail mDetail  = DbManager.getElementFromCursor(cursor);
         viewHolder.bind(mDetail);
 
@@ -64,29 +70,33 @@ public class PopularMoviesAdapter extends CursorRecyclerViewAdapter<PopularMovie
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private ImageView imageView;
+        private ImageView imageThumbNail;
         private MovieDetail movieDetail;
+        //private TextView movieTitle;
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = (ImageView)itemView.findViewById(R.id.movieThumbnail);
-            imageView.setOnClickListener(this);
+            imageThumbNail = (ImageView)itemView.findViewById(R.id.movieThumbnail);
+            CardView cardView  = (CardView)itemView.findViewById(R.id.movieCardView);
+            cardView.setPreventCornerOverlap(false);
+            imageThumbNail.setOnClickListener(this);
         }
 
 
         public void bind(final MovieDetail movieDetail){
             this.movieDetail = movieDetail;
             Log.d(TAG,"MovieDetail:"+movieDetail);
-            ViewTreeObserver vto = imageView.getViewTreeObserver();
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            ViewTreeObserver vto = imageThumbNail.getViewTreeObserver();
+            /*vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     //imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    int height = imageView.getMeasuredHeight();
-                    int width = imageView.getMeasuredWidth();
-                    Log.d(TAG,"width:"+width+" height:"+height);
-                    Picasso.with(imageView.getContext()).load(TMDB_IMAGE_LINK+movieDetail.getThumbNailLink()).resize(width, height).into(imageView);
-                }
-            });
+                    int height = imageThumbNail.getMeasuredHeight();
+                    int width = imageThumbNail.getMeasuredWidth();
+                    Log.d(TAG,"width:"+width+" height:"+height);*/
+                    Picasso.with(imageThumbNail.getContext()).load(movieDetail.getPosterLink()).fit().into(imageThumbNail);
+            //    }
+            //});
+            //movieTitle.setText(movieDetail.getMovieTitle());
 
         }
 
@@ -95,12 +105,12 @@ public class PopularMoviesAdapter extends CursorRecyclerViewAdapter<PopularMovie
             if(isTwoPane)
             {
                 ((PopularMoviesGrid)mContext).addDetailFragment(movieDetail);
-
             }
             else
             {
                 Intent intent = new Intent(mContext, MovieDetailActivity.class);
-                intent.getExtras().putParcelable(MOVIE_DETAIL,movieDetail);
+                Log.d(TAG,"movieDetail:"+movieDetail+" intent extra:"+intent.getExtras());
+                intent.putExtra(MOVIE_DETAIL,movieDetail);
                 mContext.startActivity(intent);
             }
         }

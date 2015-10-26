@@ -19,6 +19,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 /**
  * Created by skyfishjy on 10/31/14.
@@ -26,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
+    private static final String TAG = CursorRecyclerViewAdapter.class.getCanonicalName();
     private Context mContext;
 
     private Cursor mCursor;
@@ -54,6 +56,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     @Override
     public int getItemCount() {
         if (mDataValid && mCursor != null) {
+            Log.d(TAG, "cursor count:" +mCursor.getCount());
             return mCursor.getCount();
         }
         return 0;
@@ -76,10 +79,12 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(VH viewHolder, int position) {
+
         if (!mDataValid) {
             throw new IllegalStateException("this should only be called when the cursor is valid");
         }
         if (!mCursor.moveToPosition(position)) {
+            Log.d(TAG,"cursor count:"+mCursor.getCount());
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
         onBindViewHolder(viewHolder, mCursor);

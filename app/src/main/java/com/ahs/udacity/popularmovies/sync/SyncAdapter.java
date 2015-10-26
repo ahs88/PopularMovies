@@ -40,7 +40,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -76,6 +79,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String POPULAR_MOVIE_URL = "http://api.themoviedb.org/3/movie/popular?sort_by=popularity.desc&api_key=4908fbb64f831529fa956302208ea557";
     private static final String VIDEO_KEY_URL = "https://api.themoviedb.org/3/movie";
     private static final String POSTFIX = "videos?api_key=4908fbb64f831529fa956302208ea557";
+    private static final String IMAGE_PREFIX="http://image.tmdb.org/t/p/w500";
     /**
      * Network connection timeout, in milliseconds.
      */
@@ -107,6 +111,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int COLUMN_TITLE = 1;
     public static final int COLUMN_YOUTUBE_KEY = 2;
     public static final int COLUMN_RELEASE_DATE = 3;
+    private String poster_link;
 
     /**
      * Constructor. Obtains handle to content resolver for later use.
@@ -150,11 +155,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 Log.i(TAG, "Streaming data from network: " + location);
                 stream = downloadUrl(location);
-                updateLocalFeedData(stream, syncResult);
+                updateMovieDetails(stream, syncResult);
 
                 // Makes sure that the InputStream is closed after the app is
                 // finished using it.
-            } finally {
+            }catch(JsonSyntaxException jse){
+                    jse.printStackTrace();
+            } finally
+            {
                 if (stream != null) {
                     stream.close();
                 }
@@ -207,28 +215,37 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      * (At this point, incoming database only contains missing items.)<br/>
      * 3. For any items remaining in incoming list, ADD to database.
      */
-    public void updateLocalFeedData(final InputStream stream, final SyncResult syncResult)
+    public void updateMovieDetails(final InputStream stream, final SyncResult syncResult)
             throws IOException, XmlPullParserException, RemoteException,
             OperationApplicationException, ParseException {
         //final FeedParser feedParser = new FeedParser();
 
-
+        List<MovieDetail> entries = null;
         Log.i(TAG, "Parsing stream as Movie detail");
-        List<MovieDetail> entries = parseJson(stream);
+        try {
+             entries = parseJson(stream);
+        }catch(JsonSyntaxException e){
+            e.printStackTrace();
+            Log.d(TAG,"error in json response");
+            return;
+        }
+
 
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Build hash table of incoming entries
-        HashMap<String, MovieDetail> entryMap = new HashMap<String, MovieDetail>();
+        HashMap<Integer, MovieDetail> entryMap = new HashMap<Integer, MovieDetail>();
         for (MovieDetail e : entries) {
 
             //download youtube key
             InputStream keyStream = downloadUrl(new URL(VIDEO_KEY_URL + "/" + e.getMovieId() + "/" + POSTFIX));
             String video_key = streamTOString(keyStream);
-            List<MovieType> movieTypes = parseKey("results","key",video_key);
+            List<MovieType> movieTypes = parseKey("results",video_key);
             e.setYoutubeKey(getTrailerKey(movieTypes));
+            Log.d(TAG, "adding movieDetail object:" + e);
             entryMap.put(e.getMovieId(), e);
+
         }
 
 
@@ -236,7 +253,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Get list of all items
         Log.i(TAG, "Fetching local entries for merge");
         Uri uri = MovieContract.Entry.CONTENT_URI; // Get all entries
-        Cursor c = contentResolver.query(uri, PROJECTION, null, null, null);
+        Cursor c = contentResolver.query(uri, null, null, null, null);
         assert c != null;
         Log.i(TAG, "Found " + c.getCount() + " local entries. Computing merge solution...");
 
@@ -246,13 +263,23 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         String title;
         String youtube_key;
         String release_date;
+        String thumb_nail;
+        String overview;
+        String popularity;
+        String rating;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
-            id = c.getInt(COLUMN_MOVIE_ID);
+            id = c.getInt(c.getColumnIndex(MovieContract.Entry._ID));
 
-            title = c.getString(COLUMN_TITLE);
-            youtube_key = c.getString(COLUMN_YOUTUBE_KEY);
-            release_date = c.getString(COLUMN_RELEASE_DATE);
+            title = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_MOVIE_TITLE));
+            youtube_key = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY));
+            thumb_nail = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_THUMBNAIL_LINK));
+            poster_link = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_POSTER_LINK));
+            release_date = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE));
+            overview = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_MOVIE_OVERVIEW));
+            rating  = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_MOVIE_RATING));
+            popularity = c.getString(c.getColumnIndex(MovieContract.Entry.COLUMN_MOVIE_POPULARITY));
+
             MovieDetail match = entryMap.get(id);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
@@ -260,15 +287,21 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Check to see if the entry needs to be updated
                 Uri existingUri = MovieContract.Entry.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
-                if ((match.getMovieTitle() != null && !match.getMovieTitle().equals(title)) ||
+                if ((match.getMovieTitle() != null && !match.getMovieTitle().equals(title)) || (match.getOverview()!=null && !match.getOverview().equals(overview)) ||
                         (match.getYoutubeKey() != null && !match.getYoutubeKey().equals(youtube_key)) ||
                         (match.getReleaseDate() != release_date)) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
-                            .withValue(MovieContract.Entry.COLUMN_MOVIE_TITLE, title)
-                            .withValue(MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY, youtube_key)
-                            .withValue(MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE, release_date)
+                            .withValue(MovieContract.Entry.COLUMN_MOVIE_TITLE, match.getMovieTitle())
+                            .withValue(MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY, match.getYoutubeKey())
+                            .withValue(MovieContract.Entry.COLUMN_THUMBNAIL_LINK, IMAGE_PREFIX + match.getThumbNailLink())
+                            .withValue(MovieContract.Entry.COLUMN_POSTER_LINK, IMAGE_PREFIX + match.getPosterLink())
+                            .withValue(MovieContract.Entry.COLUMN_MOVIE_OVERVIEW, match.getOverview())
+                            .withValue(MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE, match.getReleaseDate())
+                            .withValue(MovieContract.Entry.COLUMN_MOVIE_RATING, match.getRating())
+                            .withValue(MovieContract.Entry.COLUMN_GENRE, new JSONArray(match.getGenreIds()).toString())
+                            .withValue(MovieContract.Entry.COLUMN_MOVIE_POPULARITY, match.getPopularity())
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -292,7 +325,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .withValue(MovieContract.Entry._ID, e.getMovieId())
                     .withValue(MovieContract.Entry.COLUMN_MOVIE_TITLE, e.getMovieTitle())
                     .withValue(MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY, e.getYoutubeKey())
+                    .withValue(MovieContract.Entry.COLUMN_POSTER_LINK, IMAGE_PREFIX + e.getPosterLink())
+                    .withValue(MovieContract.Entry.COLUMN_THUMBNAIL_LINK, IMAGE_PREFIX + e.getThumbNailLink())
                     .withValue(MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE, e.getReleaseDate())
+                    .withValue(MovieContract.Entry.COLUMN_MOVIE_RATING, e.getRating())
+                    .withValue(MovieContract.Entry.COLUMN_MOVIE_OVERVIEW, e.getOverview())
+                    .withValue(MovieContract.Entry.COLUMN_GENRE, new JSONArray(e.getGenreIds()).toString())
+                    .withValue(MovieContract.Entry.COLUMN_MOVIE_POPULARITY, e.getPopularity())
                     .build());
             syncResult.stats.numInserts++;
         }
@@ -306,10 +345,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // syncToNetwork=false in the line above to prevent duplicate syncs.
     }
 
-    private List<MovieType> parseKey(String rootElement, String elementkey, String video_key_data) {
+    private List<MovieType> parseKey(String rootElement, String video_key_data) {
         JsonParser jsonParser = new JsonParser();
-        Log.d(TAG, "video_key_data:" + video_key_data);
-        JsonArray jsonArray = (JsonArray)jsonParser.parse(video_key_data).getAsJsonObject().getAsJsonArray("results");
+        //Log.d(TAG, "video_key_data:" + video_key_data);
+        JsonArray jsonArray = (JsonArray)jsonParser.parse(video_key_data).getAsJsonObject().getAsJsonArray(rootElement);
             //JsonElement jsonelement = jsonArray.get(0);
         Gson gson = new Gson();
         List<MovieType> movieTypes= new ArrayList<MovieType>(3);
@@ -340,7 +379,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         Type type = new TypeToken<List<MovieDetail>>(){}.getType();
         final List<MovieDetail> entries = new ArrayList<>();
         for (JsonElement object: jsonArray) {
-            entries.add(gson.fromJson(object, MovieDetail.class));
+            MovieDetail movieDetail = gson.fromJson(object, MovieDetail.class);
+
+            entries.add(movieDetail);
         }   //feedParser.parse(stream);
         Log.i(TAG, "Parsing complete. Found " + entries.size() + " entries");
         return entries;

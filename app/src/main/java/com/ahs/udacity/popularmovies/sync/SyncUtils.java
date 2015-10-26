@@ -22,6 +22,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.ahs.udacity.popularmovies.accounts.GenericAccountService;
 import com.ahs.udacity.popularmovies.provider.MovieContract;
@@ -34,6 +35,7 @@ public class SyncUtils {
     private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
     private static final String CONTENT_AUTHORITY = MovieContract.CONTENT_AUTHORITY;
     private static final String PREF_SETUP_COMPLETE = "setup_complete";
+    private static final String TAG = SyncUtils.class.getCanonicalName();
 
     /**
      * Create an entry for this application in the system account list, if it isn't already there.
@@ -82,6 +84,7 @@ public class SyncUtils {
      * the OS additional freedom in scheduling your sync request.
      */
     public static void TriggerRefresh() {
+        Log.d(TAG,"TriggerRefresh");
         Bundle b = new Bundle();
         // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
