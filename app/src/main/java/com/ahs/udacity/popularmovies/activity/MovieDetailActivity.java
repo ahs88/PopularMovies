@@ -68,6 +68,10 @@ public class MovieDetailActivity extends AppCompatActivity implements MoviesDeta
         movieDetailFragment.mDetailTab(v);
     }
 
-
+    public void playTrailer(View v)
+    {
+        MoviesDetailFragment movieDetailFragment = (MoviesDetailFragment)getSupportFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
+        movieDetailFragment.playTrailer(v);
+    }
 
 }

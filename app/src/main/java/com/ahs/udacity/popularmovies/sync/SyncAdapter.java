@@ -370,6 +370,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private List<MovieDetail> parseJson(InputStream stream) {
         String jsonString = null;
+        if(stream == null){
+            return null;
+        }
         jsonString = streamTOString(stream);
 
         JsonParser jsonParser = new JsonParser();

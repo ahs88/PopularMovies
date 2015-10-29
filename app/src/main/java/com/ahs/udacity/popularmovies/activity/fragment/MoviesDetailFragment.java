@@ -1,6 +1,7 @@
 package com.ahs.udacity.popularmovies.activity.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -38,6 +39,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     private static final int GENRE = 2;
     private static final float SELECTED_SIZE = 22;
     private static final float DESELECTED_SIZE = 16;
+    private static final String YOUTUBE_LINK = "https://www.youtube.com/watch?v=";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -167,6 +169,11 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
             }
         }
 
+    }
+
+    public void playTrailer(View v)
+    {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_LINK+movie_detail.getYoutubeKey())));
     }
 
 }

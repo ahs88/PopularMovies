@@ -7,45 +7,66 @@
     tools:context="com.ahs.udacity.popularmovies.activity.fragment.MoviesDetailFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
-    <ImageView
-        android:id="@+id/moviePoster"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_weight="0.5">
 
-    </ImageView>
+        <ImageView
+            android:id="@+id/moviePoster"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:onClick="playTrailer"
+            >
+
+
+        </ImageView>
+        <ImageView
+            android:id="@+id/play"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:onClick="playTrailer"
+            android:src="@drawable/play"
+            >
+
+
+        </ImageView>
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="0.5">
+
         <LinearLayout
             android:id="@+id/tabLayout"
             android:layout_width="fill_parent"
-            android:orientation="horizontal"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:background="@color/detail_tab_color"
+            android:orientation="horizontal"
             android:weightSum="1.0">
+
             <TextView
                 android:id="@+id/overview"
-                android:textSize="20sp"
                 style="@style/mTABTextStyle"
                 android:text="@string/overview"
+                android:textSize="20sp"
 
                 />
+
             <TextView
                 android:id="@+id/rating"
                 style="@style/mTABTextStyle"
                 android:text="@string/rating"
 
                 />
+
             <TextView
                 android:id="@+id/genre"
                 style="@style/mTABTextStyle"
-                android:text="@string/genre"
-                />
+                android:text="@string/genre" />
             <!--<TextView
                 android:id="@+id/history_chat"
                 style="@style/mTABTextStyle"
@@ -56,10 +77,9 @@
         <android.support.v4.view.ViewPager
 
             android:id="@+id/detailedContentPager"
-            android:layout_below="@+id/tabLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@android:color/white"
-            ></android.support.v4.view.ViewPager>
+            android:layout_below="@+id/tabLayout"
+            android:background="@android:color/white"></android.support.v4.view.ViewPager>
     </RelativeLayout>
 </LinearLayout>

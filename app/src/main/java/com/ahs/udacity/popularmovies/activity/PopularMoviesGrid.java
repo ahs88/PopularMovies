@@ -89,8 +89,13 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id) {
+            case R.id.action_popular:
+                getSupportLoaderManager().initLoader(0, null, this);
+                break;
+            case R.id.highly_rated:
+                getSupportLoaderManager().initLoader(1, null, this);
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -160,13 +165,35 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
 
     @Override
     public android.support.v4.content.Loader onCreateLoader(int id, Bundle args) {
-         return new CursorLoader(this,  // Context
-                MovieContract.Entry.CONTENT_URI, // URI
-                null,                // Projection
-                null,                           // Selection
-                null,                           // Selection args
-                MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE + " desc");
+        switch(id) {
+            case 0: {
+                return new CursorLoader(this,  // Context
+                        MovieContract.Entry.CONTENT_URI, // URI
+                        null,                // Projection
+                        null,                           // Selection
+                        null,                           // Selection args
+                        MovieContract.Entry.COLUMN_MOVIE_POPULARITY + " desc");
 
+            }
+            case 1:{
+                return new CursorLoader(this,  // Context
+                        MovieContract.Entry.CONTENT_URI, // URI
+                        null,                // Projection
+                        null,                           // Selection
+                        null,                           // Selection args
+                        MovieContract.Entry.COLUMN_MOVIE_RATING + " desc");
+
+            }
+            default:{
+                return new CursorLoader(this,  // Context
+                        MovieContract.Entry.CONTENT_URI, // URI
+                        null,                // Projection
+                        null,                           // Selection
+                        null,                           // Selection args
+                        MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE + " desc");
+            }
+
+        }
     }
 
     @Override
@@ -174,7 +201,7 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         Log.d(TAG,"onLoadFinished cursor:"+(Cursor)data);
 
         initAdapter((Cursor) data);
-        moviesAdapter.changeCursor((Cursor) data);
+        moviesAdapter.swapCursor((Cursor) data);
 
     }
 
@@ -203,4 +230,11 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
             mSyncObserverHandle = null;
         }
     }
+
+    public void playTrailer(View v)
+    {
+        MoviesDetailFragment movieDetailFragment = (MoviesDetailFragment)getSupportFragmentManager().findFragmentByTag(MoviesDetailFragment.TAG);
+        movieDetailFragment.playTrailer(v);
+    }
+
 }
