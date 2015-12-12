@@ -14,4 +14,24 @@
     <string name="title_activity_movie_detail">MovieDetailActivity</string>
     <string name="popular">Popular</string>
     <string name="highly_rated">Highly Rated</string>
+    <string name="favourite">Favourite</string>
+    <string name="service_name">share service</string>
+    <string name="movie_added_favourite">has been added to favourite list</string>
+    <string name="share_string">Hey guys checkout the trailer of</string>
+    <string name="action_share">Share</string>
+    <string name="action_favourite">Favourite</string>
+    <string name="mark_favourite">Add to Favourite List</string>
+    <string name="share_friends">Share with Friends</string>
+    <string name="unmark_as_favourite">Remove from Favourite List</string>
+    <string name="options">Options</string>
+    <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
+    <string name="movie_remove_favourite">removed from favourites</string>
+    <string name="action_search">Search Movie By Title</string>
+    <string name="hint">Search by title</string>
+    <string name="search_hint">Search by Movie Title</string>
+    <string name="out_of_10_rating">%1$s/10</string>
+    <string name="released_on_date">Released on %1$s</string>
+    <string name="trailer">Trailer</string>
+    <string name="no_internet">Please connect to internet to load \n the movie list.</string>
+    <string name="no_favourites">No Movies added to Favourites List</string>
 </resources>

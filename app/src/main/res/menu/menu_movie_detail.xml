@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ahs.udacity.popularmovies.activity.MovieDetailActivity">
 
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_favourite" android:title="@string/action_favourite"
         android:orderInCategory="100" app:showAsAction="never"></item>
 
 </menu>

@@ -104,6 +104,7 @@ public class MovieContract {
         public static final String COLUMN_IS_TOP_RATED = "is_top_rated";
         public static final String COLUMN_IS_UPCOMING = "is_upoming";
         public static final String COLUMN_IS_NOW_PLAYING = "is_now_playing";
+        public static final String COLUMN_IS_FAVOURITE = "is_favourite";
 
     }
 }

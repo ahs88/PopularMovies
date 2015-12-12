@@ -11,6 +11,7 @@
         android:textColor="@android:color/black"
         android:gravity="top"
         android:padding="10dp"
+        android:scrollbars="vertical"
         />
 
 </FrameLayout>

@@ -37,7 +37,7 @@ public class MovieDetailPagerAdapter extends FragmentPagerAdapter {
                 Overview overview = Overview.newInstance(movieDetail.getOverview());
                 return overview;
             case RATINGS:
-                Ratings rating = Ratings.newInstance(movieDetail.getRating(), movieDetail.getPopularity());
+                Ratings rating = Ratings.newInstance(movieDetail.getRating(), movieDetail.getPopularity(),movieDetail.getReleaseDate());
                 return rating;
             case GENRE:
                 Genre popularity = Genre.newInstance((ArrayList)movieDetail.getGenreIds());

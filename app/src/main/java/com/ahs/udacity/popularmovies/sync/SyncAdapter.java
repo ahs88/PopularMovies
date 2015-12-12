@@ -67,7 +67,7 @@ import java.util.List;
  * <p>The system calls onPerformSync() via an RPC call through the IBinder object supplied by
  * SyncService.
  */
-class SyncAdapter extends AbstractThreadedSyncAdapter {
+public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TAG = "SyncAdapter";
 
     /**
@@ -76,8 +76,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
      * <p>This points to the Android Developers Blog. (Side note: We highly recommend reading the
      * Android Developer Blog to stay up to date on the latest Android platform developments!)
      */
+    public static final String POPULAR_MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/popular";
     private static final String POPULAR_MOVIE_URL = "http://api.themoviedb.org/3/movie/popular?sort_by=popularity.desc&api_key=4908fbb64f831529fa956302208ea557";
-    private static final String VIDEO_KEY_URL = "https://api.themoviedb.org/3/movie";
+    public static final String VIDEO_KEY_URL = "https://api.themoviedb.org/3/movie";
     private static final String POSTFIX = "videos?api_key=4908fbb64f831529fa956302208ea557";
     private static final String IMAGE_PREFIX="http://image.tmdb.org/t/p/w500";
     /**
@@ -223,6 +224,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         List<MovieDetail> entries = null;
         Log.i(TAG, "Parsing stream as Movie detail");
         try {
+
              entries = parseJson(stream);
         }catch(JsonSyntaxException e){
             e.printStackTrace();
@@ -302,6 +304,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                             .withValue(MovieContract.Entry.COLUMN_MOVIE_RATING, match.getRating())
                             .withValue(MovieContract.Entry.COLUMN_GENRE, new JSONArray(match.getGenreIds()).toString())
                             .withValue(MovieContract.Entry.COLUMN_MOVIE_POPULARITY, match.getPopularity())
+                            /*.withValue(MovieContract.Entry.COLUMN_IS_FAVOURITE, match.isFavourite())*/
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -309,11 +312,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             } else {
                 // Entry doesn't exist. Remove it from the database.
-                Uri deleteUri = MovieContract.Entry.CONTENT_URI.buildUpon()
+               /* Uri deleteUri = MovieContract.Entry.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
                 Log.i(TAG, "Scheduling delete: " + deleteUri);
                 batch.add(ContentProviderOperation.newDelete(deleteUri).build());
-                syncResult.stats.numDeletes++;
+                syncResult.stats.numDeletes++;*/
             }
         }
         c.close();
@@ -332,6 +335,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .withValue(MovieContract.Entry.COLUMN_MOVIE_OVERVIEW, e.getOverview())
                     .withValue(MovieContract.Entry.COLUMN_GENRE, new JSONArray(e.getGenreIds()).toString())
                     .withValue(MovieContract.Entry.COLUMN_MOVIE_POPULARITY, e.getPopularity())
+                    /*.withValue(MovieContract.Entry.COLUMN_IS_FAVOURITE, e.isFavourite())*/
                     .build());
             syncResult.stats.numInserts++;
         }
@@ -371,6 +375,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private List<MovieDetail> parseJson(InputStream stream) {
         String jsonString = null;
         if(stream == null){
+            Log.d(TAG,"parseJson -- stream is null returning");
             return null;
         }
         jsonString = streamTOString(stream);
@@ -386,7 +391,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             entries.add(movieDetail);
         }   //feedParser.parse(stream);
-        Log.i(TAG, "Parsing complete. Found " + entries.size() + " entries");
+        Log.d(TAG, "Parsing complete. Found " + entries.size() + " entries");
         return entries;
 
     }

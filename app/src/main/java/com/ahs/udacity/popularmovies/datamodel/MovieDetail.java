@@ -23,6 +23,7 @@ import java.util.Map;
 public class MovieDetail implements Parcelable{
 
     private static final String TAG = MovieDetail.class.getCanonicalName();
+    private static final int NON_STRING_PARCELABLE_COUNT = 3;
     @SerializedName("id")
     private int movieId;
     @SerializedName("title")
@@ -44,18 +45,21 @@ public class MovieDetail implements Parcelable{
     @SerializedName("vote_average")
     private String rating;
 
+    private Boolean isFavourite=false;
+
     //constants to map setters and getter funcitons
 
-    private static final String MOVIEID= MovieContract.Entry._ID;
-    private static final String MOVIETITLE=MovieContract.Entry.COLUMN_MOVIE_TITLE;
-    private static final String GENREID=MovieContract.Entry.COLUMN_GENRE;
-    private static final String OVERVIEW= MovieContract.Entry.COLUMN_MOVIE_OVERVIEW;
-    private static final String RELEASEDATE=MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE;
-    private static final String YOUTUBEKEY=MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY;
-    private static final String POSTERLINK=MovieContract.Entry.COLUMN_POSTER_LINK;
-    private static final String THUMBNAIL=MovieContract.Entry.COLUMN_THUMBNAIL_LINK;
-    private static final String POPULARITY =MovieContract.Entry.COLUMN_MOVIE_POPULARITY ;
-    private static final String RATING = MovieContract.Entry.COLUMN_MOVIE_RATING;
+    public static final String MOVIEID= MovieContract.Entry._ID;
+    public static final String MOVIETITLE=MovieContract.Entry.COLUMN_MOVIE_TITLE;
+    public static final String GENREID=MovieContract.Entry.COLUMN_GENRE;
+    public static final String OVERVIEW= MovieContract.Entry.COLUMN_MOVIE_OVERVIEW;
+    public static final String RELEASEDATE=MovieContract.Entry.COLUMN_MOVIE_RELEASE_DATE;
+    public static final String YOUTUBEKEY=MovieContract.Entry.COLUMN_YOUTUBE_VIDEO_KEY;
+    public static final String POSTERLINK=MovieContract.Entry.COLUMN_POSTER_LINK;
+    public static final String THUMBNAIL=MovieContract.Entry.COLUMN_THUMBNAIL_LINK;
+    public static final String POPULARITY =MovieContract.Entry.COLUMN_MOVIE_POPULARITY ;
+    public static final String RATING = MovieContract.Entry.COLUMN_MOVIE_RATING;
+    public static final String ISFAVOURTIE = MovieContract.Entry.COLUMN_IS_FAVOURITE;
 
     private Map<String,Method> mGetterMethodMap=new HashMap<>();
 
@@ -76,12 +80,12 @@ public class MovieDetail implements Parcelable{
     }
 
 
-    private List<String> detailKeyList= Arrays.asList(MOVIEID,MOVIETITLE,OVERVIEW,RELEASEDATE,YOUTUBEKEY,POSTERLINK,THUMBNAIL,POPULARITY,RATING,GENREID);
+    private List<String> detailKeyList= Arrays.asList(MOVIEID,MOVIETITLE,OVERVIEW,RELEASEDATE,YOUTUBEKEY,POSTERLINK,THUMBNAIL,POPULARITY,RATING,GENREID,ISFAVOURTIE);
 
     public MovieDetail(Parcel parcel) throws NoSuchMethodException {
         initMethodMap();
         movieId = parcel.readInt();
-        String []arr = new String[detailKeyList.size()-2];
+        String []arr = new String[detailKeyList.size()-NON_STRING_PARCELABLE_COUNT];
                 parcel.readStringArray(arr);
         int i=1;
         for(String key:arr){
@@ -100,7 +104,9 @@ public class MovieDetail implements Parcelable{
         }
 
         parcel.readList(genreIds, MovieDetail.class.getClassLoader());
-
+        int is_favourite = 0;
+        is_favourite = parcel.readInt();
+        isFavourite = (is_favourite==1)?true:false;
     }
 
 
@@ -182,6 +188,7 @@ public class MovieDetail implements Parcelable{
         mGetterMethodMap.put(THUMBNAIL,MovieDetail.class.getMethod("getThumbNailLink"));
         mGetterMethodMap.put(POPULARITY,MovieDetail.class.getMethod("getPopularity"));
         mGetterMethodMap.put(RATING,MovieDetail.class.getMethod("getRating"));
+        mGetterMethodMap.put(ISFAVOURTIE,MovieDetail.class.getMethod("isFavourite"));
 
         //args for setter method
         Class[] cStringArgs = new Class[1];
@@ -205,6 +212,7 @@ public class MovieDetail implements Parcelable{
         mSetterMethodMap.put(THUMBNAIL,MovieDetail.class.getMethod("setThumbNailLink",cStringArgs));
         mSetterMethodMap.put(POPULARITY,MovieDetail.class.getMethod("setPopularity", String.class));
         mSetterMethodMap.put(RATING,MovieDetail.class.getMethod("setRating", String.class));
+        mSetterMethodMap.put(ISFAVOURTIE,MovieDetail.class.getMethod("setIsFavourite", Boolean.class));
     }
 
     public List<String> getDetailKeyList() {
@@ -242,8 +250,9 @@ public class MovieDetail implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
           dest.writeInt(this.movieId);
-          dest.writeStringArray(new String[]{this.movieTitle,this.overview,this.releaseDate,this.youtubeKey,this.posterLink,this.thumbNailLink,this.popularity,this.rating});
+          dest.writeStringArray(new String[]{this.movieTitle, this.overview, this.releaseDate, this.youtubeKey, this.posterLink, this.thumbNailLink, this.popularity, this.rating});
           dest.writeList(this.genreIds);
+          dest.writeInt((this.isFavourite)?1:0);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){
@@ -277,5 +286,13 @@ public class MovieDetail implements Parcelable{
 
     public void setRating(String rating) {
         this.rating = rating;
+    }
+
+    public Boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setIsFavourite(Boolean isFavourite) {
+        this.isFavourite = isFavourite;
     }
 }

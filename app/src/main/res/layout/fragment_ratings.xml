@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_toRightOf="@+id/rating_icon"
         android:textColor="@android:color/black"
-        android:text="7.5/10"
+        android:text="@string/out_of_10_rating"
         android:layout_centerVertical="true"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -31,4 +31,15 @@
         android:layout_marginLeft="10dp"
         android:textSize="20sp"
         android:text="222233"/>
+
+    <TextView
+        android:id="@+id/release_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/released_on_date"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/rating_icon"
+        />
 </RelativeLayout>

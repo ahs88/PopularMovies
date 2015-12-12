@@ -2,6 +2,7 @@ package com.ahs.udacity.popularmovies.activity.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -13,10 +14,17 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ahs.udacity.popularmovies.Movies;
 import com.ahs.udacity.popularmovies.R;
 import com.ahs.udacity.popularmovies.adapter.MovieDetailPagerAdapter;
 import com.ahs.udacity.popularmovies.datamodel.MovieDetail;
+import com.ahs.udacity.popularmovies.provider.DbManager;
+import com.github.clans.fab.FloatingActionButton;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -48,6 +56,10 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     private View convert_view;
     private MovieDetail movie_detail;
     private ViewPager viewPager;
+    private FloatingActionButton favourite_fab;
+    private FloatingActionButton share_fab;
+    private YouTubePlayer youTubePlayer;
+    private YouTubePlayerSupportFragment youTubePlayerSupportFragment;
 
     /**
      * Use this factory method to create a new instance of
@@ -84,10 +96,68 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         convert_view =  inflater.inflate(R.layout.fragment_movies_detail, container, false);
         viewPager = (ViewPager)convert_view.findViewById(R.id.detailedContentPager);
+        if( viewPager !=null ){
+            setupMovieDetails();
+        }
+        youTubePlayerSupportFragment = (YouTubePlayerSupportFragment)getChildFragmentManager().findFragmentById(R.id.youtube_fragment);
+        YouTubeListeners youTubeListeners = new YouTubeListeners();
+        youTubePlayerSupportFragment.initialize(Movies.DEVELOPER_KEY, youTubeListeners);
+        return convert_view;
+    }
+
+    private void setupMovieDetails() {
+
         MovieDetailPagerAdapter movieDetailPagerAdapter = new MovieDetailPagerAdapter(getActivity(),getChildFragmentManager(),movie_detail);
         viewPager.setAdapter(movieDetailPagerAdapter);
+        setupPageChangeListener();
+    }
 
-        return convert_view;
+
+    private void setupPageChangeListener() {
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                int id = -1;
+                switch (position) {
+                    case 0:
+                        id = R.id.overview;
+                        break;
+                    case 1:
+                        id = R.id.rating;
+                        break;
+                    case 2:
+                        id = R.id.genre;
+                        break;
+                }
+                setTabTextSize(id);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ((TextView)convert_view.findViewById(R.id.movie_title)).setText(movie_detail.getMovieTitle());
+        favourite_fab = (FloatingActionButton)convert_view.findViewById(R.id.fab_favourite);
+        if(!movie_detail.isFavourite()) {
+            favourite_fab.setLabelText(getString(R.string.mark_favourite));
+        }
+        else
+        {
+            favourite_fab.setLabelText(getString(R.string.unmark_as_favourite));
+        }
+        share_fab = (FloatingActionButton)convert_view.findViewById(R.id.fab_share);
+        share_fab.setLabelText(getString(R.string.share_friends));
     }
 
     @Override
@@ -96,7 +166,6 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
         Log.d(TAG, "onresume");
         final ImageView imageView = (ImageView) convert_view.findViewById(R.id.moviePoster);
         Picasso.with(getActivity()).load(TMDB_URL + movie_detail.getThumbNailLink()).fit().into(imageView);
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -122,6 +191,9 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -173,7 +245,103 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
 
     public void playTrailer(View v)
     {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_LINK+movie_detail.getYoutubeKey())));
+        //player initialized
+        if(youTubePlayer!=null) {
+            Log.d(TAG,"playTrailer key"+movie_detail.getYoutubeKey());
+            convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
+            MyPlayBackListener myPlayBackListener = new MyPlayBackListener();
+            youTubePlayer.setPlaybackEventListener(myPlayBackListener);
+            if(movie_detail.getYoutubeKey()!=null) {
+                youTubePlayer.loadVideo(movie_detail.getYoutubeKey());
+            }
+            else
+            {
+                //TODO display dialog saying trailer not available
+            }
+            //youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
+        }
+        else //not initialized
+        {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_LINK + movie_detail.getYoutubeKey())));
+        }
+    }
+
+    public void markAsFavourite(View v,int current_id) {
+        String toDisplay = "";
+        if(!movie_detail.isFavourite()) {
+            if(DbManager.markAsFavourite(getActivity(), movie_detail.getMovieId())) {
+                movie_detail.setIsFavourite(true);
+                favourite_fab.setLabelText(getString(R.string.unmark_as_favourite));
+                toDisplay = getString(R.string.movie_added_favourite);
+            }
+        }
+        else
+        {
+            if (DbManager.unmarkAsFavourite(getActivity(), movie_detail.getMovieId())) {
+                movie_detail.setIsFavourite(false);
+                favourite_fab.setLabelText(getString(R.string.mark_favourite));
+                toDisplay = getString(R.string.movie_remove_favourite);
+
+            }
+        }
+
+        Toast.makeText(getActivity(), movie_detail.getMovieTitle() + " " + toDisplay, Toast.LENGTH_LONG).show();
+    }
+
+    public void share(View viewById) {
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_string) + "\"" + movie_detail.getMovieTitle() + "\" -" + "\n"+YOUTUBE_LINK + movie_detail.getYoutubeKey());
+        startActivity(Intent.createChooser(share, "Share with Friends"));
+    }
+
+    public class YouTubeListeners implements YouTubePlayer.OnInitializedListener{
+
+        @Override
+        public void onInitializationSuccess(YouTubePlayer.Provider provider,YouTubePlayer you_tube_player, boolean b) {
+            youTubePlayer = you_tube_player;
+
+
+            Log.d(TAG,"onInitializationSuccess youtube player:"+you_tube_player);
+
+        }
+
+        @Override
+        public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+            Log.d(TAG, "onInitializationFailure youtube player :"+youTubeInitializationResult.toString());
+
+        }
+    }
+
+
+    class MyPlayBackListener implements YouTubePlayer.PlaybackEventListener {
+
+        @Override
+        public void onPlaying() {
+            Log.d(TAG," video playing");
+            convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onPaused() {
+            Log.d(TAG," video paused");
+        }
+
+        @Override
+        public void onStopped() {
+            Log.d(TAG," video stopped");
+            convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onBuffering(boolean b) {
+
+        }
+
+        @Override
+        public void onSeekTo(int i) {
+
+        }
     }
 
 }

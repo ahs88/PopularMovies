@@ -1,8 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".PopularMoviesGrid">
+    <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:hint="@string/hint"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.SearchView" />
+
     <item android:id="@+id/highly_rated" android:title="@string/highly_rated"
         android:orderInCategory="100" app:showAsAction="never"></item>
     <item android:id="@+id/action_popular" android:title="@string/popular"
         android:orderInCategory="100" app:showAsAction="never"></item>
+    <item android:id="@+id/action_favourite" android:title="@string/favourite"
+        android:orderInCategory="100" app:showAsAction="never"></item>
+
 </menu>

@@ -4,6 +4,8 @@ import android.app.Application;
 import android.graphics.Movie;
 import android.util.Log;
 
+import com.google.android.youtube.player.YouTubeApiServiceUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ public class Movies extends Application {
     private static final String TAG = "Movies";
     private static Map<Integer,String> genreMap;
     private static Movies movies;
+    public static final String DEVELOPER_KEY = "AIzaSyBR6VXBfPjDtx0YofFl6yO19rZEXrSuR2Q";
 
     public static Movies getInstance()
     {

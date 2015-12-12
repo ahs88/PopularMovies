@@ -24,7 +24,7 @@ public class Ratings extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String RATING = "RATING";
     private static final String VOTE_COUNT = "VOTE_COUNT";
-
+    private static final String RELEASE_DATE = "RELEASE_DATE";
 
 
     private OnFragmentInteractionListener mListener;
@@ -33,6 +33,8 @@ public class Ratings extends android.support.v4.app.Fragment {
     private String rating;
     private String vote_count;
     private TextView vote_count_view;
+    private String release_date;
+    private TextView release_date_view;
 
     /**
      * Use this factory method to create a new instance of
@@ -43,11 +45,13 @@ public class Ratings extends android.support.v4.app.Fragment {
      * @return A new instance of fragment Ratings.
      */
     // TODO: Rename and change types and number of parameters
-    public static Ratings newInstance(String param1, String param2) {
+    public static Ratings newInstance(String param1, String param2,String release_date) {
         Ratings fragment = new Ratings();
         Bundle args = new Bundle();
         args.putString(RATING, param1);
         args.putString(VOTE_COUNT, param2);
+        args.putString(RELEASE_DATE, release_date);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,6 +66,7 @@ public class Ratings extends android.support.v4.app.Fragment {
         if (getArguments() != null) {
             rating = getArguments().getString(RATING);
             vote_count = getArguments().getString(VOTE_COUNT);
+            release_date = getArguments().getString(RELEASE_DATE);
         }
     }
 
@@ -73,7 +78,10 @@ public class Ratings extends android.support.v4.app.Fragment {
 
         rating_view = (TextView)convert_view.findViewById(R.id.rating);
         vote_count_view = (TextView)convert_view.findViewById(R.id.vote_count);
-        rating_view.setText(rating);
+        release_date_view = (TextView)convert_view.findViewById(R.id.release_date);
+        rating_view.setText(getString(R.string.out_of_10_rating,rating));
+
+        release_date_view.setText(getString(R.string.released_on_date,release_date));
         vote_count_view.setText(vote_count);
         return convert_view;
     }

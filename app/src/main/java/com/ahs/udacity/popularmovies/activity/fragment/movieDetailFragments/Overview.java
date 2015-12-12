@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,7 @@ public class Overview extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
         TextView plot = (TextView)view.findViewById(R.id.moviePlot);
         plot.setText(moviePlot);
+        plot.setMovementMethod(new ScrollingMovementMethod());
         return view;
     }
 

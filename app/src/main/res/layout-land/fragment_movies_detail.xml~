@@ -1,0 +1,186 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1.0"
+    tools:context="com.ahs.udacity.popularmovies.activity.fragment.MoviesDetailFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5">
+
+        <fragment
+            android:id="@+id/youtube_fragment"
+            android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/moviePoster_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/moviePoster"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:onClick="playTrailer">
+
+
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/play"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:onClick="playTrailer"
+                android:src="@drawable/play">
+
+
+            </ImageView>
+            <!-- <ImageView
+                 android:layout_width="30dp"
+                 android:layout_height="30dp"
+                 android:layout_marginTop="10dp"
+                 android:layout_marginRight="50dp"
+                 android:src="@android:drawable/ic_menu_share"
+                 android:onClick="shareMovie"
+                 android:layout_gravity="right"/>-->
+
+
+            <TextView
+                android:id="@+id/movie_title"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:alpha="0.5"
+                android:background="@android:color/black"
+                android:gravity="center"
+                android:text="James Bond"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+
+                android:textStyle="bold" />
+
+        </FrameLayout>
+    </FrameLayout>
+
+    <RelativeLayout
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.5">
+
+        <LinearLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/detail_tab_color"
+            android:orientation="horizontal"
+            android:weightSum="1.0">
+
+            <TextView
+                android:id="@+id/overview"
+                style="@style/mTABTextStyle"
+                android:layout_weight="0.3"
+                android:text="@string/overview"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="fill_parent"
+                android:background="@android:color/white" />
+
+            <TextView
+                android:id="@+id/rating"
+                style="@style/mTABTextStyle"
+                android:layout_weight="0.3"
+                android:text="@string/rating" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="fill_parent"
+                android:background="@android:color/white" />
+
+            <TextView
+                android:id="@+id/genre"
+                style="@style/mTABTextStyle"
+                android:layout_weight="0.3"
+                android:text="@string/genre" />
+
+            <!--<View
+                android:layout_width="1dp"
+                android:layout_height="fill_parent"
+                android:background="@android:color/white"/>-->
+            <!--<ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/heart_unselected"
+                android:onClick="markAsFovourite"
+                android:layout_gravity="center"
+                android:layout_weight="0.12"/>-->
+        </LinearLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/detailedContentPager"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/tabLayout"
+            android:background="@android:color/white"></android.support.v4.view.ViewPager>
+
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/menu1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            fab:menu_backgroundColor="@android:color/transparent"
+            fab:menu_fab_label="@string/options"
+            fab:menu_labels_ellipsize="end"
+            fab:menu_labels_singleLine="true">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_favourite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="markAsFovourite"
+                android:src="@drawable/heart_unselected"
+                fab:fab_label="Menu item 1"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="shareMovie"
+                android:src="@android:drawable/ic_menu_share"
+                fab:fab_label="Menu item 2"
+                fab:fab_size="mini" />
+
+
+        </com.github.clans.fab.FloatingActionMenu>
+
+
+    </RelativeLayout>
+
+
+    <!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right">
+
+
+
+    </FrameLayout>-->
+</LinearLayout>
