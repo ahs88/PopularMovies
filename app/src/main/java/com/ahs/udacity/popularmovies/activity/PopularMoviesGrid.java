@@ -73,6 +73,7 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
     private ImageView spinningView;
     private AnimationDrawable frameAnimation;
     private SearchView searchView;
+    private StaggeredGridLayoutManager gridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +84,29 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
             CURRENT_LOADER_ID = savedInstanceState.getInt(CURRENT_LOADER_STATE);
         }
 
+        setupGridView();
+
+
+        if (findViewById(R.id.movieDetailContainer) != null) {
+            Log.d(TAG, "movieDetailContainer");
+
+            mTwoPane = true;
+
+        } else {
+            mTwoPane = false;
+        }
+
+        SyncUtils.CreateSyncAccount(this);
+        getSupportLoaderManager().initLoader(CURRENT_LOADER_ID, null, this);
+        //SyncUtils.TriggerRefresh();
+
+    }
+
+    private void setupGridView() {
         gridView = (RecyclerView) findViewById(R.id.mGridView);
         gridView.setHasFixedSize(false);
 
-        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager((findViewById(R.id.orientation_land)==null)?GRID_COUNT_PORT:GRID_COUNT_LAND, StaggeredGridLayoutManager.VERTICAL);
+        gridLayoutManager = new StaggeredGridLayoutManager((findViewById(R.id.orientation_land)==null)?GRID_COUNT_PORT:GRID_COUNT_LAND, StaggeredGridLayoutManager.VERTICAL);
 
 
         gridView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -111,21 +131,6 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         gridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
 
         gridView.setLayoutManager(gridLayoutManager);
-
-
-        if (findViewById(R.id.movieDetailContainer) != null) {
-            Log.d(TAG, "movieDetailContainer");
-
-            mTwoPane = true;
-
-        } else {
-            mTwoPane = false;
-        }
-
-        SyncUtils.CreateSyncAccount(this);
-        getSupportLoaderManager().initLoader(CURRENT_LOADER_ID, null, this);
-        //SyncUtils.TriggerRefresh();
-
     }
 
 
@@ -343,14 +348,21 @@ public class PopularMoviesGrid extends AppCompatActivity implements MoviesDetail
         }
     }
 
-    public void initAdapter(Cursor cursor) {
-        if (moviesAdapter == null) {
-            moviesAdapter = new PopularMoviesAdapter(cursor, mContext, mTwoPane, CURRENT_LOADER_ID);
-            moviesAdapter.swapCursor((Cursor) cursor);
-            gridView.setAdapter(moviesAdapter);
-        }
-        moviesAdapter.swapCursor((Cursor) cursor);
-        Log.d(TAG, "initAdapter");
+    public void initAdapter(final Cursor cursor) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (moviesAdapter == null) {
+                    moviesAdapter = new PopularMoviesAdapter(cursor, mContext, mTwoPane, CURRENT_LOADER_ID);
+                    moviesAdapter.swapCursor((Cursor) cursor);
+                    gridView.setAdapter(moviesAdapter);
+                }
+                moviesAdapter.swapCursor((Cursor) cursor);
+                Log.d(TAG, "initAdapter");
+            }
+        });
+
     }
 
 
