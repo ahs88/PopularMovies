@@ -247,7 +247,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
     {
         //player initialized
         if(youTubePlayer!=null) {
-            Log.d(TAG,"playTrailer key"+movie_detail.getYoutubeKey());
+            Log.d(TAG,"playTrailer key:"+movie_detail.getYoutubeKey());
             convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
             MyPlayBackListener myPlayBackListener = new MyPlayBackListener();
             youTubePlayer.setPlaybackEventListener(myPlayBackListener);
@@ -335,12 +335,12 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
 
         @Override
         public void onBuffering(boolean b) {
-
+            Log.d(TAG,"onBuffering");
         }
 
         @Override
         public void onSeekTo(int i) {
-
+            Log.d(TAG,"onSeekTo:"+i);
         }
     }
 
