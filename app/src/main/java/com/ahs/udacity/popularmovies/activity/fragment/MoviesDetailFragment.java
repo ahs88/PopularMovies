@@ -248,7 +248,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
         //player initialized
         if(youTubePlayer!=null) {
             Log.d(TAG,"playTrailer key:"+movie_detail.getYoutubeKey());
-            convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
+
             MyPlayBackListener myPlayBackListener = new MyPlayBackListener();
             youTubePlayer.setPlaybackEventListener(myPlayBackListener);
             if(movie_detail.getYoutubeKey()!=null) {
@@ -258,6 +258,7 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
             {
                 //TODO display dialog saying trailer not available
             }
+            convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
             //youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         }
         else //not initialized
@@ -320,21 +321,26 @@ public class MoviesDetailFragment extends android.support.v4.app.Fragment {
         public void onPlaying() {
             Log.d(TAG," video playing");
             convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
+            youTubePlayer.loadVideo(movie_detail.getYoutubeKey());
         }
 
         @Override
         public void onPaused() {
             Log.d(TAG," video paused");
+
         }
 
         @Override
         public void onStopped() {
             Log.d(TAG," video stopped");
+            //youTubePlayer.loadVideo(movie_detail.getYoutubeKey());
             convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.VISIBLE);
+
         }
 
         @Override
         public void onBuffering(boolean b) {
+            convert_view.findViewById(R.id.moviePoster_container).setVisibility(View.GONE);
             Log.d(TAG,"onBuffering");
         }
 
